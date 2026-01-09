@@ -1,0 +1,180 @@
+/* Cards */
+.card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    margin-bottom: 25px;
+    border: 1px solid #edf2f7;
+}
+
+/* Buttons */
+.btn-new {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+.btn-new:hover { background: var(--primary-hover); }
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-grey);
+}
+.btn-outline:hover { background: #f0f0f0; }
+
+.action-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 5px;
+    transition: 0.2s;
+}
+
+/* Badges & Colors */
+.badge { padding: 4px 10px; border-radius: 6px; color: var(--white); font-size: 0.75rem; font-weight: 500; }
+.text-green { color: var(--green); }
+.text-red { color: var(--red); }
+.text-dark { color: var(--text-dark); }
+.text-grey { color: var(--text-grey); }
+
+/* Forms */
+.input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+.input-group label { font-size: 0.85rem; color: var(--text-grey); margin-bottom: 5px; }
+.input-group input, .input-group select {
+    padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1rem; outline: none;
+}
+.input-group input:focus, .input-group select:focus { border-color: var(--primary-color); }
+
+/* Modal */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; visibility: hidden; transition: 0.3s; z-index: 1000;
+}
+.modal-overlay.active { opacity: 1; visibility: visible; }
+
+.modal {
+    background: var(--white); padding: 30px; border-radius: 12px;
+    width: 90%; max-width: 450px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* TABS (Navegação interna de Relatórios) */
+.tabs-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-grey);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.tab-btn:hover {
+    background-color: var(--blue-light);
+    color: var(--blue);
+}
+
+.tab-btn.active {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+/* Filtros de Relatório */
+.filters-bar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    background: var(--white);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #edf2f7;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+}
+.filter-item label {
+    font-size: 0.8rem;
+    color: var(--text-grey);
+    margin-bottom: 5px;
+}
+.filter-item select, .filter-item input {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+/* Área de Conteúdo da Aba */
+.tab-content {
+    display: none; /* Escondido por padrão */
+    animation: fadeIn 0.3s ease;
+}
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ... código anterior ... */
+
+/* Lista de Categorias (Ranking) */
+.category-list {
+    list-style: none;
+    margin-top: 15px;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.95rem;
+}
+
+.category-item:last-child {
+    border-bottom: none;
+}
+
+.category-name {
+    font-weight: 500;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.diff-value {
+    font-weight: 700;
+}

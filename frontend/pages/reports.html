@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - Finanças</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="../assets/css/reset.css">
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-wallet fa-2x"></i>
+                <span style="font-weight:700; font-size:1.5rem; margin-left: 10px;">Finanças</span>
+            </div>
+            <nav class="menu">
+                <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="expenses.html" class="menu-item"><i class="fas fa-chart-pie"></i> Despesas</a>
+                <a href="gains.html" class="menu-item"><i class="fas fa-chart-line"></i> Ganhos</a>
+                <a href="investments.html" class="menu-item"><i class="fas fa-chart-bar"></i> Investimentos</a>
+                <a href="#" class="menu-item active"><i class="fas fa-file-alt"></i> Relatórios</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="content-wrapper" style="margin-bottom:20px;">
+                <h2>Relatórios Financeiros</h2>
+            </header>
+
+            <div class="content-wrapper">
+                
+                <div class="tabs-container">
+                    <button class="tab-btn active" onclick="switchTab('monthly')">Análise Mensal</button>
+                    <button class="tab-btn" onclick="switchTab('annual')">Análise Anual</button>
+                    <button class="tab-btn" onclick="switchTab('comparative')">Comparativo Anual</button>
+                </div>
+
+                <div id="tab-monthly" class="tab-content active">
+                    <div class="filters-bar">
+                        <div class="filter-item">
+                            <label>Mês</label>
+                            <select id="monthlyMonth">
+                                <option value="0">Janeiro</option>
+                                <option value="1">Fevereiro</option>
+                                <option value="2">Março</option>
+                                <option value="3">Abril</option>
+                                <option value="4">Maio</option>
+                                <option value="5">Junho</option>
+                                <option value="6">Julho</option>
+                                <option value="7">Agosto</option>
+                                <option value="8">Setembro</option>
+                                <option value="9">Outubro</option>
+                                <option value="10">Novembro</option>
+                                <option value="11">Dezembro</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label>Ano</label>
+                            <select id="monthlyYear"></select> </div>
+                        <button class="btn-new" id="btnFilterMonthly" style="height: 40px; margin-top: 18px;">Filtrar</button>
+                    </div>
+
+                    <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                        <div class="card" style="flex:1; min-width:300px; height:350px;">
+                            <h3>Distribuição de Despesas</h3>
+                            <div style="height:280px; position:relative;">
+                                <canvas id="monthlyCategoryChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="card" style="flex:1; min-width:300px; height:350px;">
+                            <h3>Fluxo de Caixa Diário</h3>
+                            <div style="height:280px; position:relative;">
+                                <canvas id="monthlyEvolutionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-annual" class="tab-content">
+                    <div class="filters-bar">
+                        <div class="filter-item">
+                            <label>Selecionar Ano</label>
+                            <select id="annualYear"></select>
+                        </div>
+                        <button class="btn-new" id="btnFilterAnnual" style="height: 40px; margin-top: 18px;">Filtrar</button>
+                    </div>
+
+                    <div class="card" style="height:400px;">
+                        <h3>Balanço Anual (Receitas x Despesas)</h3>
+                        <div style="height:320px; position:relative;">
+                            <canvas id="annualBalanceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:20px; margin-top:20px;">
+                        <div class="card" style="flex:1; text-align:center;">
+                            <span class="text-grey">Total Receitas</span>
+                            <h3 class="text-green" id="annualTotalIncome">R$ 0,00</h3>
+                        </div>
+                        <div class="card" style="flex:1; text-align:center;">
+                            <span class="text-grey">Total Despesas</span>
+                            <h3 class="text-red" id="annualTotalExpense">R$ 0,00</h3>
+                        </div>
+                        <div class="card" style="flex:1; text-align:center;">
+                            <span class="text-grey">Resultado</span>
+                            <h3 class="text-dark" id="annualResult">R$ 0,00</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-comparative" class="tab-content">
+                    
+                    <div class="filters-bar">
+                        <div class="filter-item">
+                            <label>Ano Base (Anterior)</label>
+                            <select id="compYear1"></select>
+                        </div>
+                        <div style="font-weight:700; color:#999; margin-top:15px;">VS</div>
+                        <div class="filter-item">
+                            <label>Ano Comparado (Atual)</label>
+                            <select id="compYear2"></select>
+                        </div>
+                        <button class="btn-new" id="btnFilterComp" style="height: 40px; margin-top: 18px;">Comparar</button>
+                    </div>
+
+                    <div style="display:flex; gap:15px; margin-bottom:25px; flex-wrap:wrap;">
+                        
+                        <div class="card" style="flex:1; min-width:220px; display:flex; flex-direction:column; justify-content:space-between;">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <span class="text-grey">Receita Total</span>
+                                <span id="compIncPerc" class="badge" style="font-size:0.9rem;">0%</span>
+                            </div>
+                            <div style="margin-top:15px;">
+                                <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-bottom:5px; color:#666;">
+                                    <span id="compLabelY1_Inc">Ano 1</span>
+                                    <span id="compValY1_Inc">R$ 0,00</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; font-size:1.1rem; font-weight:700;" class="text-dark">
+                                    <span id="compLabelY2_Inc">Ano 2</span>
+                                    <span id="compValY2_Inc">R$ 0,00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card" style="flex:1; min-width:220px; display:flex; flex-direction:column; justify-content:space-between;">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <span class="text-grey">Despesa Total</span>
+                                <span id="compExpPerc" class="badge" style="font-size:0.9rem;">0%</span>
+                            </div>
+                            <div style="margin-top:15px;">
+                                <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-bottom:5px; color:#666;">
+                                    <span id="compLabelY1_Exp">Ano 1</span>
+                                    <span id="compValY1_Exp">R$ 0,00</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; font-size:1.1rem; font-weight:700;" class="text-dark">
+                                    <span id="compLabelY2_Exp">Ano 2</span>
+                                    <span id="compValY2_Exp">R$ 0,00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card" style="flex:1; min-width:220px; display:flex; flex-direction:column; justify-content:space-between;">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <span class="text-grey">Saldo Líquido</span>
+                                <span id="compBalPerc" class="badge" style="font-size:0.9rem;">0%</span>
+                            </div>
+                            <div style="margin-top:15px;">
+                                <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-bottom:5px; color:#666;">
+                                    <span id="compLabelY1_Bal">Ano 1</span>
+                                    <span id="compValY1_Bal">R$ 0,00</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; font-size:1.1rem; font-weight:700;" class="text-dark">
+                                    <span id="compLabelY2_Bal">Ano 2</span>
+                                    <span id="compValY2_Bal">R$ 0,00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="flex:1; min-width:300px;">
+                            <h3 style="color: var(--red); font-size:1rem; display:flex; align-items:center; gap:8px;">
+                                <i class="fas fa-arrow-up"></i> Onde gastou mais
+                            </h3>
+                            <ul id="topIncreasesList" class="category-list">
+                                </ul>
+                        </div>
+
+                        <div class="card" style="flex:1; min-width:300px;">
+                            <h3 style="color: var(--green); font-size:1rem; display:flex; align-items:center; gap:8px;">
+                                <i class="fas fa-arrow-down"></i> Onde economizou
+                            </h3>
+                            <ul id="topDecreasesList" class="category-list">
+                                </ul>
+                        </div>
+
+                    </div>
+                                        
+                    <div style="display:flex; gap:20px; flex-wrap: wrap;">
+                        <div class="card" style="height:350px; flex:1; min-width: 300px;">
+                            <h3>Comparativo de Receitas</h3>
+                            <div style="height:280px; position:relative;">
+                                <canvas id="compIncomeChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card" style="height:350px; flex:1; min-width: 300px;">
+                            <h3>Comparativo de Despesas</h3>
+                            <div style="height:280px; position:relative;">
+                                <canvas id="compExpenseChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Esconde todas as abas
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            // Mostra a selecionada
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            // Ativa botão
+            // Encontra o botão que chamou a função (ou varre todos pra achar o texto/data)
+            const buttons = document.querySelectorAll('.tab-btn');
+            if(tabName === 'monthly') buttons[0].classList.add('active');
+            if(tabName === 'annual') buttons[1].classList.add('active');
+            if(tabName === 'comparative') buttons[2].classList.add('active');
+
+            // Dispara evento para o JS carregar os gráficos daquela aba (opcional, ou carrega tudo)
+            document.dispatchEvent(new CustomEvent('tabChanged', { detail: tabName }));
+        }
+    </script>
+    <script type="module" src="../assets/js/pages/reports.js"></script>
+</body>
+</html>

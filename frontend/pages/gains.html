@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ganhos - Finanças</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="../assets/css/reset.css">
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-wallet fa-2x"></i>
+                <span style="font-weight:700; font-size:1.5rem; margin-left: 10px;">Finanças</span>
+            </div>
+            <nav class="menu">
+                <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="expenses.html" class="menu-item"><i class="fas fa-chart-pie"></i> Despesas</a>
+                <a href="#" class="menu-item active"><i class="fas fa-chart-line"></i> Ganhos</a>
+                <a href="investments.html" class="menu-item"><i class="fas fa-chart-bar"></i> Investimentos</a>
+                <a href="reports.html" class="menu-item"><i class="fas fa-file-alt"></i> Relatórios</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="content-wrapper" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+                <h2>Meus Ganhos</h2>
+                <button class="btn-new" id="btnNewGain"><i class="fas fa-plus"></i> Novo Ganho</button>
+            </header>
+
+            <div class="content-wrapper">
+                
+                <section class="card" style="display:flex; justify-content:center; align-items:center; gap:20px;">
+                    <button id="prevMonth" class="action-btn"><i class="fas fa-chevron-left"></i></button>
+                    <span id="currentMonthDisplay" style="font-weight:700; min-width:150px; text-align:center; text-transform: capitalize;">---</span>
+                    <button id="nextMonth" class="action-btn"><i class="fas fa-chevron-right"></i></button>
+                </section>
+
+                <section style="display:flex; gap:20px; flex-wrap: wrap; margin-bottom:20px;">
+                    <div class="card" style="flex:1; min-width: 200px;">
+                        <span class="text-grey">Total a Receber</span>
+                        <h3 class="text-green" id="totalIncomeDisplay">R$ 0,00</h3>
+                    </div>
+                    
+                    <div class="card" style="flex:1; min-width: 200px;">
+                        <span class="text-grey">Já Recebido</span>
+                        <h3 class="text-green" id="receivedIncomeDisplay">R$ 0,00</h3>
+                    </div>
+
+                    <div class="card" style="flex:1; min-width: 200px;">
+                        <span class="text-grey">Pendente</span>
+                        <h3 class="text-dark" id="pendingIncomeDisplay">R$ 0,00</h3>
+                    </div>
+                </section>
+
+                <section class="card" style="overflow-x: auto;">
+                    <table style="width:100%; text-align:left; border-collapse:collapse; min-width: 600px;">
+                        <thead>
+                            <tr style="border-bottom:1px solid #eee;">
+                                <th style="padding:10px; width:50px;">Recebido?</th>
+                                <th style="width:15%">Data</th>
+                                <th style="width:20%">Categoria</th>
+                                <th style="width:35%">Descrição</th>
+                                <th style="width:20%">Valor</th>
+                                <th style="width:100px;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gainsTable">
+                            </tbody>
+                    </table>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h2 id="modalTitle" style="margin-bottom:20px; color: var(--text-dark);">Novo Ganho</h2>
+            <form id="gainForm">
+                <input type="hidden" id="transactionId">
+
+                <div class="input-group">
+                    <label>Descrição</label>
+                    <input type="text" id="title" required placeholder="Ex: Salário, Venda...">
+                </div>
+
+                <div class="input-group">
+                    <label>Valor (R$)</label>
+                    <input type="number" id="amount" step="0.01" required placeholder="0.00">
+                </div>
+
+                <div style="display:flex; gap:15px;">
+                    <div class="input-group" style="flex:1">
+                        <label>Data</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    
+                    <div class="input-group" style="flex:1">
+                        <label>Categoria</label>
+                        <select id="category">
+                            <option value="Salário">Salário</option>
+                            <option value="Freelance">Freelance</option>
+                            <option value="Investimento">Investimento</option>
+                            <option value="Vendas">Vendas</option>
+                            <option value="Presente">Presente</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:20px; margin-top:15px;">
+                    <div class="input-group" style="flex-direction:row; align-items:center; gap:10px;">
+                        <input type="checkbox" id="isFixed" style="width:auto;">
+                        <label for="isFixed" style="margin:0; cursor:pointer;">É receita fixa?</label>
+                    </div>
+
+                    <div class="input-group" style="flex-direction:row; align-items:center; gap:10px;">
+                        <input type="checkbox" id="isPaid" style="width:auto;">
+                        <label for="isPaid" style="margin:0; cursor:pointer;">Já foi recebido?</label>
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:25px;">
+                    <button type="button" id="btnCancel" class="btn-outline">Cancelar</button>
+                    <button type="submit" class="btn-new">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="../assets/js/pages/gains.js"></script>
+</body>
+</html>
