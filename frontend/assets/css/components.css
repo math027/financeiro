@@ -146,8 +146,6 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* ... código anterior ... */
-
 /* Lista de Categorias (Ranking) */
 .category-list {
     list-style: none;
@@ -178,3 +176,62 @@
 .diff-value {
     font-weight: 700;
 }
+
+/* --- TABS (Navegação de Abas) --- */
+.tabs-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0; /* var(--border-color) */
+    padding-bottom: 10px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #666; /* var(--text-grey) */
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.tab-btn:hover {
+    background-color: #e3f2fd; /* var(--blue-light) */
+    color: #1565c0; /* var(--blue) */
+}
+
+.tab-btn.active {
+    background-color: #00008b; /* var(--primary-color) */
+    color: #ffffff; /* var(--white) */
+}
+
+/* Lógica de Esconder/Mostrar */
+.tab-content {
+    display: none; /* O SEGREDO ESTÁ AQUI: Esconde tudo por padrão */
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block; /* Mostra só quem tem a classe active */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Ranking de Categorias */
+.category-list {
+    list-style: none;
+    margin-top: 15px;
+}
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.diff-value { font-weight: 700; }
