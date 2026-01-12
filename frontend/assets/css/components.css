@@ -210,12 +210,12 @@
 
 /* Lógica de Esconder/Mostrar */
 .tab-content {
-    display: none; /* O SEGREDO ESTÁ AQUI: Esconde tudo por padrão */
+    display: none;
     animation: fadeIn 0.3s ease;
 }
 
 .tab-content.active {
-    display: block; /* Mostra só quem tem a classe active */
+    display: block;
 }
 
 @keyframes fadeIn {

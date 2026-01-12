@@ -18,10 +18,6 @@ function setupEventListeners() {
     document.getElementById('nextMonth').onclick = () => changeMonth(1);
 }
 
-// ==========================================
-// LÓGICA DE ATUALIZAÇÃO DA TELA
-// ==========================================
-
 function changeMonth(delta) {
     currentDate.setMonth(currentDate.getMonth() + delta);
     updateScreen();
@@ -30,25 +26,20 @@ function changeMonth(delta) {
 function updateScreen() {
     const transactions = transactionService.getAll();
     
-    // 1. Dados do Mês ATUAL
     const currentMonthData = filterTransactionsByDate(transactions, currentDate);
     
-    // 2. Dados do Mês ANTERIOR (Para comparativo)
     const prevDate = new Date(currentDate);
     prevDate.setMonth(currentDate.getMonth() - 1);
     const prevMonthData = filterTransactionsByDate(transactions, prevDate);
 
-    // Atualiza Texto do Mês
     const monthName = currentDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
     document.getElementById('currentMonthDisplay').textContent = monthName;
 
-    // Renderiza Componentes
     renderTable(currentMonthData);
     updateCards(currentMonthData);
     updateCharts(currentMonthData, prevMonthData);
 }
 
-// Função auxiliar para filtrar transações
 function filterTransactionsByDate(allTransactions, referenceDate) {
     const refYear = referenceDate.getFullYear();
     const refMonth = referenceDate.getMonth();
@@ -57,7 +48,6 @@ function filterTransactionsByDate(allTransactions, referenceDate) {
         const tDate = new Date(t.date + 'T00:00:00');
         
         if (t.isFixed) {
-            // Se fixo, aparece se foi criado antes ou durante o mês de referência
             return tDate <= new Date(refYear, refMonth + 1, 0);
         }
         
@@ -69,8 +59,6 @@ function renderTable(transactions) {
     const tbody = document.getElementById('transactionsTable');
     tbody.innerHTML = '';
 
-    // Filtramos para não mostrar investimentos na tabela geral de "Transações" do Dashboard
-    // (Opcional: se quiser ver os investimentos na lista, remova o .filter abaixo)
     const displayTransactions = transactions
         .filter(t => t.type !== 'investment') 
         .sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -78,7 +66,6 @@ function renderTable(transactions) {
     displayTransactions.forEach(t => {
         const tr = document.createElement('tr');
         
-        // Definição de classes e ícones baseados no tipo
         let amountClass = 'text-dark';
         let iconClass = 'far fa-circle text-grey';
         let amountPrefix = '';
@@ -111,7 +98,6 @@ function renderTable(transactions) {
         tbody.appendChild(tr);
     });
 
-    // Listeners Dinâmicos
     document.querySelectorAll('.toggle-status').forEach(btn => {
         btn.onclick = () => {
             transactionService.toggleStatus(Number(btn.dataset.id));
@@ -130,35 +116,27 @@ function renderTable(transactions) {
 }
 
 function updateCards(transactions) {
-    // 1. Receitas
     const income = transactions
         .filter(t => t.type === 'income')
         .reduce((acc, t) => acc + Number(t.amount), 0);
 
-    // 2. Despesas
     const expense = transactions
         .filter(t => t.type === 'expense')
         .reduce((acc, t) => acc + Number(t.amount), 0);
 
-    // 3. Investimentos (Aportes do mês) - NÃO APARECE NO CARD, MAS SUBTRAI DO SALDO
     const invested = transactions
         .filter(t => t.type === 'investment')
         .reduce((acc, t) => acc + Number(t.amount), 0);
 
-    // 4. Saldo em Conta Corrente (Líquido)
-    // Receita - Despesa - Investimento
     const currentBalance = income - expense - invested;
 
     document.getElementById('incomeDisplay').textContent = formatMoney(income);
     document.getElementById('expenseDisplay').textContent = formatMoney(expense);
     
-    // Atualiza o Saldo
     const totalEl = document.getElementById('totalDisplay');
     totalEl.textContent = formatMoney(currentBalance);
     totalEl.className = currentBalance >= 0 ? 'text-green' : 'text-red';
 
-    // Dica visual se houver investimento diminuindo o saldo
-    // Verificamos se já existe o aviso, se não, criamos
     let investWarning = document.getElementById('investWarning');
     if (!investWarning && invested > 0) {
         investWarning = document.createElement('div');
@@ -180,7 +158,6 @@ function updateCards(transactions) {
 }
 
 function updateCharts(currentData, prevData) {
-    // Comparativo (Mantemos apenas despesas vs despesas para não distorcer)
     const currentExpenses = currentData
         .filter(t => t.type === 'expense')
         .reduce((acc, t) => acc + Number(t.amount), 0);
@@ -191,7 +168,6 @@ function updateCharts(currentData, prevData) {
 
     charts.renderComparison(currentExpenses, prevExpenses);
 
-    // Categorias (Apenas Despesas)
     const categoryTotals = {};
     
     currentData.filter(t => t.type === 'expense').forEach(t => {

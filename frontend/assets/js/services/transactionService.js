@@ -10,11 +10,9 @@ export const transactionService = {
         const transactions = transactionService.getAll();
         
         if (transaction.id) {
-            // Edição (futura)
             const index = transactions.findIndex(t => t.id === transaction.id);
             if (index > -1) transactions[index] = transaction;
         } else {
-            // Criação
             transaction.id = Date.now();
             transactions.push(transaction);
         }

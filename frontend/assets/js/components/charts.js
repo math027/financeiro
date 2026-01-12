@@ -1,17 +1,14 @@
-// Variáveis locais para controlar as instâncias e evitar sobreposição
 let comparisonChartInstance = null;
 let categoryChartInstance = null;
 
-// AQUI ESTÁ O IMPORTANTE: "export const charts"
 export const charts = {
     
     renderComparison: (currentMonthValue, lastMonthValue) => {
         const canvas = document.getElementById('comparisonChart');
-        if (!canvas) return; // Evita erro se o canvas não existir
+        if (!canvas) return;
         
         const ctx = canvas.getContext('2d');
         
-        // Destrói gráfico anterior se existir
         if (comparisonChartInstance) comparisonChartInstance.destroy();
 
         comparisonChartInstance = new Chart(ctx, {
@@ -49,7 +46,6 @@ export const charts = {
         const labels = Object.keys(categoriesData);
         const data = Object.values(categoriesData);
 
-        // Cores padrão
         const colors = {
             'Alimentação': '#e67e22',
             'Moradia': '#c0392b',

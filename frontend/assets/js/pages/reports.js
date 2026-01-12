@@ -1,7 +1,6 @@
 import { transactionService } from '../services/transactionService.js';
 import { formatMoney } from '../utils/formatMoney.js';
 
-// Variáveis para guardar instâncias dos gráficos (para destruir antes de recriar)
 const charts = {
     monthlyCategory: null,
     monthlyEvolution: null,
@@ -10,7 +9,6 @@ const charts = {
     compExpense: null
 };
 
-// Estado dos Filtros
 let state = {
     monthly: { month: new Date().getMonth(), year: new Date().getFullYear() },
     annual: { year: new Date().getFullYear() },
@@ -20,12 +18,10 @@ let state = {
 document.addEventListener('DOMContentLoaded', () => {
     populateYearSelects();
     
-    // Listeners de Botões de Filtro
     document.getElementById('btnFilterMonthly').onclick = renderMonthlyTab;
     document.getElementById('btnFilterAnnual').onclick = renderAnnualTab;
     document.getElementById('btnFilterComp').onclick = renderComparativeTab;
 
-    // Escuta troca de aba para renderizar se necessário
     document.addEventListener('tabChanged', (e) => {
         const tab = e.detail;
         if(tab === 'monthly') renderMonthlyTab();
@@ -33,20 +29,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if(tab === 'comparative') renderComparativeTab();
     });
 
-    // Renderiza aba inicial (Mensal)
     renderMonthlyTab();
 });
 
-// Preenche os selects de Ano dinamicamente baseado nos dados existentes
 function populateYearSelects() {
     const transactions = transactionService.getAll();
     const years = new Set(transactions.map(t => new Date(t.date).getFullYear()));
     
-    // Adiciona ano atual se não tiver dados
     years.add(new Date().getFullYear());
-    years.add(new Date().getFullYear() - 1); // Garante pelo menos ano passado pra comparar
+    years.add(new Date().getFullYear() - 1);
 
-    const sortedYears = Array.from(years).sort((a,b) => b-a); // Decrescente
+    const sortedYears = Array.from(years).sort((a,b) => b-a);
 
     const selects = ['monthlyYear', 'annualYear', 'compYear1', 'compYear2'];
     
@@ -61,12 +54,10 @@ function populateYearSelects() {
         });
     });
 
-    // Define valores iniciais
     document.getElementById('monthlyMonth').value = state.monthly.month;
     document.getElementById('monthlyYear').value = state.monthly.year;
     document.getElementById('annualYear').value = state.annual.year;
     
-    // Comparativo: Ano atual vs Ano anterior
     if (sortedYears.length >= 2) {
         document.getElementById('compYear1').value = sortedYears[1]; // Anterior
         document.getElementById('compYear2').value = sortedYears[0]; // Atual
@@ -76,19 +67,14 @@ function populateYearSelects() {
     }
 }
 
-// ==========================================
-// ABA 1: MENSAL
-// ==========================================
 function renderMonthlyTab() {
     const month = Number(document.getElementById('monthlyMonth').value);
     const year = Number(document.getElementById('monthlyYear').value);
     
     const transactions = transactionService.getAll();
     
-    // Filtra dados do mês
     const monthlyData = transactions.filter(t => {
         const tDate = new Date(t.date + 'T00:00:00');
-        // Ignora investimentos
         if (t.type === 'investment') return false; 
         
         if (t.isFixed) {
@@ -97,7 +83,6 @@ function renderMonthlyTab() {
         return tDate.getMonth() === month && tDate.getFullYear() === year;
     });
 
-    // 1. Gráfico de Categorias (Apenas Despesas)
     const categoryData = {};
     monthlyData.filter(t => t.type === 'expense').forEach(t => {
         categoryData[t.category] = (categoryData[t.category] || 0) + Number(t.amount);
@@ -111,18 +96,14 @@ function renderMonthlyTab() {
         }]
     }, document.getElementById('monthlyCategoryChart'));
 
-    // 2. Gráfico Evolução (Saldo acumulado dia a dia)
-    // Cria array com dias do mês (1 a 31)
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const daysLabels = Array.from({length: daysInMonth}, (_, i) => i + 1);
     const dailyBalance = new Array(daysInMonth).fill(0);
 
     let accum = 0;
     daysLabels.forEach((day, index) => {
-        // Soma transações deste dia
         const dayTransactions = monthlyData.filter(t => {
             const d = new Date(t.date + 'T00:00:00');
-            // Para fixas, consideramos o dia original de vencimento
             return d.getDate() === day;
         });
 
@@ -146,18 +127,13 @@ function renderMonthlyTab() {
     }, document.getElementById('monthlyEvolutionChart'));
 }
 
-// ==========================================
-// ABA 2: ANUAL
-// ==========================================
 function renderAnnualTab() {
     const year = Number(document.getElementById('annualYear').value);
     const transactions = transactionService.getAll();
     
-    // Arrays para 12 meses
     const incomes = new Array(12).fill(0);
     const expenses = new Array(12).fill(0);
 
-    // Loop para preencher mês a mês
     for (let m = 0; m < 12; m++) {
         const monthTrans = transactions.filter(t => {
             if (t.type === 'investment') return false;
@@ -182,7 +158,6 @@ function renderAnnualTab() {
         ]
     }, document.getElementById('annualBalanceChart'));
 
-    // Totais Cards
     const totalInc = incomes.reduce((a, b) => a + b, 0);
     const totalExp = expenses.reduce((a, b) => a + b, 0);
     document.getElementById('annualTotalIncome').textContent = formatMoney(totalInc);
@@ -194,9 +169,6 @@ function renderAnnualTab() {
     resEl.className = res >= 0 ? 'text-green' : 'text-red';
 }
 
-// ==========================================
-// ABA 3: COMPARATIVO
-// ==========================================
 function renderComparativeTab() {
     const year1 = Number(document.getElementById('compYear1').value);
     const year2 = Number(document.getElementById('compYear2').value);
@@ -220,21 +192,18 @@ function renderComparativeTab() {
         }
     });
 
-    // Filtra e Ordena
-    // Aumentou gastos (Diff > 0) -> Ordena do maior para o menor
     const increases = differences
         .filter(d => d.diff > 0)
         .sort((a, b) => b.diff - a.diff)
-        .slice(0, 5); // Top 5
+        .slice(0, 5);
 
-    // Reduziu gastos (Diff < 0) -> Ordena do "mais negativo" (maior economia) para o menor
     const decreases = differences
         .filter(d => d.diff < 0)
-        .sort((a, b) => a.diff - b.diff) // Ascendente (-1000 vem antes de -100)
-        .slice(0, 5); // Top 5
+        .sort((a, b) => a.diff - b.diff) 
+        .slice(0, 5);
 
-    renderCategoryList('topIncreasesList', increases, true); // true = increases (red)
-    renderCategoryList('topDecreasesList', decreases, false); // false = decreases (green)
+    renderCategoryList('topIncreasesList', increases, true);
+    renderCategoryList('topDecreasesList', decreases, false);
 
 
     const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -263,7 +232,6 @@ function getCategoryTotalsByYear(year) {
     
     transactions.filter(t => {
         const tDate = new Date(t.date + 'T00:00:00');
-        // Filtra apenas despesas do ano específico
         return t.type === 'expense' && tDate.getFullYear() === year;
     }).forEach(t => {
         totals[t.category] = (totals[t.category] || 0) + Number(t.amount);
@@ -285,12 +253,8 @@ function renderCategoryList(elementId, items, isIncrease) {
         const li = document.createElement('li');
         li.className = 'category-item';
         
-        // Formatação: +R$ 1.000 ou -R$ 500
-        const sign = item.diff > 0 ? '+' : ''; // O formatMoney já põe sinal negativo se for menor que 0
+        const sign = item.diff > 0 ? '+' : '';
         const colorClass = isIncrease ? 'text-red' : 'text-green';
-        
-        // Ícone por categoria (Opcional, simples map)
-        // Se quiser sofisticar, crie uma função getIcon(cat)
         
         li.innerHTML = `
             <span class="category-name">${item.category}</span>
@@ -301,39 +265,30 @@ function renderCategoryList(elementId, items, isIncrease) {
     });
 }
 
-// Função Auxiliar para Calcular e Estilizar a Variação
 function updateVariationBadge(elementId, val1, val2, isExpense) {
     const el = document.getElementById(elementId);
     let percent = 0;
 
-    // Evita divisão por zero
     if (val1 !== 0) {
         percent = ((val2 - val1) / Math.abs(val1)) * 100;
     } else if (val2 !== 0) {
-        percent = 100; // Se era 0 e agora tem valor, cresceu 100% (teoricamente infinito, mas 100% fica melhor visualmente)
+        percent = 100;
     }
 
     const signal = percent > 0 ? '+' : '';
     el.textContent = `${signal}${percent.toFixed(1)}%`;
 
-    // Lógica de Cores
-    // Para Receitas e Saldo: Positivo = Verde, Negativo = Vermelho
-    // Para Despesas: Positivo (gastou mais) = Vermelho, Negativo (economizou) = Verde
-    
     el.style.color = '#fff';
     
     if (isExpense) {
-        // Despesa: Cresceu (ruim) -> Vermelho / Caiu (bom) -> Verde
         el.style.backgroundColor = percent > 0 ? '#c62828' : '#2e7d32'; 
         if(percent === 0) el.style.backgroundColor = '#999';
     } else {
-        // Receita/Saldo: Cresceu (bom) -> Verde / Caiu (ruim) -> Vermelho
         el.style.backgroundColor = percent >= 0 ? '#2e7d32' : '#c62828';
         if(percent === 0) el.style.backgroundColor = '#999';
     }
 }
 
-// Helper para pegar dados anuais
 function getAnnualData(year) {
     const transactions = transactionService.getAll();
     const incomes = new Array(12).fill(0);
@@ -357,14 +312,10 @@ function getAnnualData(year) {
     return { incomes, expenses };
 }
 
-// ==========================================
-// CHART JS HELPER
-// ==========================================
 function renderChart(key, type, data, canvas) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
-    // Destrói anterior se existir
     if (charts[key]) {
         charts[key].destroy();
     }

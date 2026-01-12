@@ -5,7 +5,6 @@ import { formatDate } from '../utils/formatDate.js';
 let currentDate = new Date();
 let editingId = null;
 
-// Elementos DOM
 const modalOverlay = document.getElementById('modalOverlay');
 const form = document.getElementById('gainForm');
 const modalTitle = document.getElementById('modalTitle');
@@ -16,16 +15,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupEventListeners() {
-    // Navegação Mês
     document.getElementById('prevMonth').onclick = () => changeMonth(-1);
     document.getElementById('nextMonth').onclick = () => changeMonth(1);
 
-    // Modal
     document.getElementById('btnNewGain').onclick = () => openModal();
     document.getElementById('btnCancel').onclick = closeModal;
     modalOverlay.onclick = (e) => { if (e.target === modalOverlay) closeModal(); };
 
-    // Submit
     form.onsubmit = handleSave;
 }
 
@@ -39,7 +35,6 @@ function updateScreen() {
     const viewYear = currentDate.getFullYear();
     const viewMonth = currentDate.getMonth();
 
-    // Filtra APENAS RECEITAS (Ganhos) do mês
     const incomes = allTransactions.filter(t => {
         if (t.type !== 'income') return false;
 
@@ -54,7 +49,6 @@ function updateScreen() {
     updateCards(incomes);
     renderTable(incomes);
 
-    // Texto do Mês
     const monthName = currentDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
     document.getElementById('currentMonthDisplay').textContent = monthName;
 }
@@ -98,7 +92,6 @@ function renderTable(incomes) {
         tbody.appendChild(tr);
     });
 
-    // Listeners
     document.querySelectorAll('.toggle-status').forEach(btn => {
         btn.onclick = () => {
             transactionService.toggleStatus(Number(btn.dataset.id));
@@ -120,13 +113,10 @@ function renderTable(incomes) {
     });
 }
 
-// --- LÓGICA DE MODAL ---
-
 function openModal(id = null) {
     modalOverlay.classList.add('active');
     
     if (id) {
-        // MODO EDIÇÃO
         const t = transactionService.getAll().find(item => item.id === id);
         if (t) {
             document.getElementById('transactionId').value = t.id;
@@ -141,7 +131,6 @@ function openModal(id = null) {
             editingId = id;
         }
     } else {
-        // MODO CRIAÇÃO
         form.reset();
         document.getElementById('date').valueAsDate = new Date();
         document.getElementById('transactionId').value = '';

@@ -227,21 +227,16 @@
 
     <script>
         function switchTab(tabName) {
-            // Esconde todas as abas
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
 
-            // Mostra a selecionada
             document.getElementById(`tab-${tabName}`).classList.add('active');
             
-            // Ativa botão
-            // Encontra o botão que chamou a função (ou varre todos pra achar o texto/data)
             const buttons = document.querySelectorAll('.tab-btn');
             if(tabName === 'monthly') buttons[0].classList.add('active');
             if(tabName === 'annual') buttons[1].classList.add('active');
             if(tabName === 'comparative') buttons[2].classList.add('active');
 
-            // Dispara evento para o JS carregar os gráficos daquela aba (opcional, ou carrega tudo)
             document.dispatchEvent(new CustomEvent('tabChanged', { detail: tabName }));
         }
     </script>

@@ -4,10 +4,8 @@ import { formatDate } from '../utils/formatDate.js';
 
 let editingId = null;
 
-// Chave específica para guardar o valor atual da carteira no LocalStorage
 const PORTFOLIO_VALUE_KEY = 'finances:portfolio_value';
 
-// Elementos DOM
 const modalOverlay = document.getElementById('modalOverlay');
 const form = document.getElementById('investmentForm');
 const modalTitle = document.getElementById('modalTitle');
@@ -18,33 +16,26 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupEventListeners() {
-    // Modal de Aporte
     document.getElementById('btnNewInvestment').onclick = () => openModal();
     document.getElementById('btnCancel').onclick = closeModal;
     modalOverlay.onclick = (e) => { if (e.target === modalOverlay) closeModal(); };
     form.onsubmit = handleSave;
 
-    // Atualizar Valor Atual da Carteira (Manual)
     document.getElementById('btnUpdateCurrentValue').onclick = updateCurrentPortfolioValue;
 }
 
 function updateScreen() {
     const allTransactions = transactionService.getAll();
 
-    // 1. Filtrar apenas Investimentos
     const investments = allTransactions.filter(t => t.type === 'investment');
 
-    // 2. Calcular Total Aportado
     const totalInvested = investments.reduce((acc, t) => acc + Number(t.amount), 0);
 
-    // 3. Pegar Valor Atual da Carteira (Salvo manualmente pelo usuário)
     const storedValue = localStorage.getItem(PORTFOLIO_VALUE_KEY);
     const currentPortfolioValue = storedValue ? Number(storedValue) : 0;
 
-    // 4. Calcular Rentabilidade
     calculateProfitability(totalInvested, currentPortfolioValue);
 
-    // 5. Atualizar Tela
     document.getElementById('totalInvestedDisplay').textContent = formatMoney(totalInvested);
     document.getElementById('currentValueDisplay').textContent = formatMoney(currentPortfolioValue);
     
@@ -65,17 +56,14 @@ function calculateProfitability(invested, current) {
     profitValueEl.textContent = formatMoney(diff);
     profitPercentEl.textContent = `(${percent.toFixed(2)}%)`;
 
-    // Cores
     profitValueEl.className = diff >= 0 ? 'profit-positive' : 'profit-negative';
     profitPercentEl.className = diff >= 0 ? 'profit-positive' : 'profit-negative';
     
-    // Adiciona sinal de + se positivo
     if(diff > 0) profitValueEl.textContent = "+ " + profitValueEl.textContent;
 }
 
 function updateCurrentPortfolioValue() {
     const storedValue = localStorage.getItem(PORTFOLIO_VALUE_KEY) || "0";
-    // Prompt simples para atualizar o valor (pode ser substituído por modal depois)
     const newValue = prompt("Qual o valor TOTAL atual da sua carteira hoje?", storedValue);
 
     if (newValue !== null && !isNaN(newValue) && newValue.trim() !== "") {
@@ -88,7 +76,6 @@ function renderTable(investments) {
     const tbody = document.getElementById('investmentsTable');
     tbody.innerHTML = '';
 
-    // Ordenar por data (mais recente primeiro)
     investments.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     investments.forEach(t => {
@@ -107,7 +94,6 @@ function renderTable(investments) {
         tbody.appendChild(tr);
     });
 
-    // Listeners
     document.querySelectorAll('.btn-delete').forEach(btn => {
         btn.onclick = () => {
             if(confirm("Excluir este aporte?")) {
@@ -121,8 +107,6 @@ function renderTable(investments) {
         btn.onclick = () => openModal(Number(btn.dataset.id));
     });
 }
-
-// --- MODAL ---
 
 function openModal(id = null) {
     modalOverlay.classList.add('active');
@@ -164,9 +148,9 @@ function handleSave(e) {
         amount: Number(document.getElementById('amount').value),
         date: document.getElementById('date').value,
         category: document.getElementById('category').value,
-        type: 'investment', // TIPO EXCLUSIVO
-        isFixed: false, // Investimento geralmente não é "fixo" no sentido de conta
-        isPaid: true // Investimento é sempre realizado na hora
+        type: 'investment',
+        isFixed: false,
+        isPaid: true 
     };
 
     transactionService.save(transaction);

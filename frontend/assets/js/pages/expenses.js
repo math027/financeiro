@@ -3,9 +3,8 @@ import { formatMoney } from '../utils/formatMoney.js';
 import { formatDate } from '../utils/formatDate.js';
 
 let currentDate = new Date();
-let editingId = null; // Controla se estamos editando
+let editingId = null;
 
-// Elementos DOM
 const modalOverlay = document.getElementById('modalOverlay');
 const form = document.getElementById('expenseForm');
 const modalTitle = document.getElementById('modalTitle');
@@ -16,16 +15,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupEventListeners() {
-    // Navegação Mês
     document.getElementById('prevMonth').onclick = () => changeMonth(-1);
     document.getElementById('nextMonth').onclick = () => changeMonth(1);
 
-    // Modal
     document.getElementById('btnNewExpense').onclick = () => openModal();
     document.getElementById('btnCancel').onclick = closeModal;
     modalOverlay.onclick = (e) => { if (e.target === modalOverlay) closeModal(); };
 
-    // Submit
     form.onsubmit = handleSave;
 }
 
@@ -39,9 +35,7 @@ function updateScreen() {
     const viewYear = currentDate.getFullYear();
     const viewMonth = currentDate.getMonth();
 
-    // Filtra APENAS DESPESAS do mês selecionado
     const expenses = allTransactions.filter(t => {
-        // Verifica se é tipo 'expense'
         if (t.type !== 'expense') return false;
 
         const tDate = new Date(t.date + 'T00:00:00');
@@ -55,7 +49,6 @@ function updateScreen() {
     updateCards(expenses);
     renderTable(expenses);
 
-    // Atualiza Texto do Mês
     const monthName = currentDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
     document.getElementById('currentMonthDisplay').textContent = monthName;
 }
@@ -79,7 +72,7 @@ function renderTable(expenses) {
     expenses.forEach(t => {
         const tr = document.createElement('tr');
         const iconClass = t.isPaid ? 'fas fa-check-circle text-green' : 'far fa-circle text-grey';
-        const rowOpacity = t.isPaid ? '0.6' : '1'; // Visualmente mais leve se pago
+        const rowOpacity = t.isPaid ? '0.6' : '1';
 
         tr.style.opacity = rowOpacity;
         
@@ -102,7 +95,6 @@ function renderTable(expenses) {
         tbody.appendChild(tr);
     });
 
-    // Listeners da Tabela
     document.querySelectorAll('.toggle-status').forEach(btn => {
         btn.onclick = () => {
             transactionService.toggleStatus(Number(btn.dataset.id));
@@ -124,13 +116,10 @@ function renderTable(expenses) {
     });
 }
 
-// --- LÓGICA DE MODAL (CRIAR E EDITAR) ---
-
 function openModal(id = null) {
     modalOverlay.classList.add('active');
     
     if (id) {
-        // MODO EDIÇÃO
         const t = transactionService.getAll().find(item => item.id === id);
         if (t) {
             document.getElementById('transactionId').value = t.id;
@@ -145,7 +134,6 @@ function openModal(id = null) {
             editingId = id;
         }
     } else {
-        // MODO CRIAÇÃO
         form.reset();
         document.getElementById('date').valueAsDate = new Date();
         document.getElementById('transactionId').value = '';
@@ -165,12 +153,12 @@ function handleSave(e) {
     const id = document.getElementById('transactionId').value;
     
     const transaction = {
-        id: id ? Number(id) : null, // Se tiver ID, mantém. Se não, service cria.
+        id: id ? Number(id) : null,
         title: document.getElementById('title').value,
         amount: Number(document.getElementById('amount').value),
         date: document.getElementById('date').value,
         category: document.getElementById('category').value,
-        type: 'expense', // Força tipo Despesa
+        type: 'expense',
         isFixed: document.getElementById('isFixed').checked,
         isPaid: document.getElementById('isPaid').checked
     };
