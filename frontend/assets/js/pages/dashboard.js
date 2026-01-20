@@ -43,15 +43,26 @@ function updateScreen() {
 function filterTransactionsByDate(allTransactions, referenceDate) {
     const refYear = referenceDate.getFullYear();
     const refMonth = referenceDate.getMonth();
+    
+    const viewStart = new Date(refYear, refMonth, 1);
+    const viewEnd = new Date(refYear, refMonth + 1, 0);
 
     return allTransactions.filter(t => {
         const tDate = new Date(t.date + 'T00:00:00');
         
         if (t.isFixed) {
-            return tDate <= new Date(refYear, refMonth + 1, 0);
+            return tDate <= viewEnd;
         }
         
-        return tDate.getMonth() === refMonth && tDate.getFullYear() === refYear;
+        const isCurrentMonth = tDate.getMonth() === refMonth && tDate.getFullYear() === refYear;
+        
+        // Lógica para Despesas: Incluir atrasadas (overdue)
+        if (t.type === 'expense') {
+            const isOverdue = tDate < viewStart && !t.isPaid;
+            return isCurrentMonth || isOverdue;
+        }
+        
+        return isCurrentMonth;
     });
 }
 

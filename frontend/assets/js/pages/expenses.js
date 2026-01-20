@@ -39,11 +39,21 @@ function updateScreen() {
         if (t.type !== 'expense') return false;
 
         const tDate = new Date(t.date + 'T00:00:00');
+        const viewStart = new Date(viewYear, viewMonth, 1);
+        const viewEnd = new Date(viewYear, viewMonth + 1, 0);
         
+        // Se for fixa
         if (t.isFixed) {
-            return tDate <= new Date(viewYear, viewMonth + 1, 0);
+            return tDate <= viewEnd;
         }
-        return tDate.getMonth() === viewMonth && tDate.getFullYear() === viewYear;
+
+        // Se for normal:
+        // 1. Pertence ao mês atual
+        const isCurrentMonth = tDate.getMonth() === viewMonth && tDate.getFullYear() === viewYear;
+        // 2. É antiga (data anterior ao mês atual) e NÃO foi paga
+        const isOverdue = tDate < viewStart && !t.isPaid;
+
+        return isCurrentMonth || isOverdue;
     });
 
     updateCards(expenses);
